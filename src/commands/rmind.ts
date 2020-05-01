@@ -1,62 +1,76 @@
-
 import { GluegunCommand } from 'gluegun'
-import * as notifier from 'node-notifier';
-const crontab = require('crontab')
 let chrono = require('chrono-node')
-
-const capitalize = str => str.charAt(0).toUpperCase() + str.slice(1);
-
-/**
- * rmind do something at 7 pm
- * 
- * rmind do something --force --id 12356
- */
+import { readConfig } from 'node-dotconfig'
+import { remind, capitalize, CONFIG_FILE, initConfig, launchConfig } from '../shared/utils'
+import { format, formatRelative } from 'date-fns'
 
 const command: GluegunCommand = {
   name: 'rmind',
   run: async toolbox => {
     const { print, parameters } = toolbox
-    const { force } = parameters.options;
-    const [parsedDate] = chrono.parse(parameters.string);
-    const reminderText = parameters.string.slice(0, parsedDate.index).trim();
-    if (!force) {
-      crontab.load((_err, crontab) => {
-        const id = Math.ceil(Math.random()*10000000);
-        print.info(`I will remind you to ${reminderText} ${parsedDate.text}`);
-        const job = crontab.create(`PATH=${process.env.PATH}:/Users/carlos/Desktop/hacks/rmind/bin rmind ${parameters.string} --force --id ${id}`, chrono.parseDate(parsedDate.text));
-        crontab.save(err => err && print.error(err));
-        if (job == null) {
-          console.log('failed to create job')
-        }
-      })
-    }
-    if (force) {
-      const { id } = parameters.options;
-      notifier.notify({
-        title: 'Remember',
-        message: capitalize(reminderText),
-        actions: ['20 minutes', '1 hour', '6 hours', 'Tonight at 7:00 PM', 'Tomorrow at 9:00 AM', 'Next week'],
-        dropdownLabel: 'Postpone',
-        timeout: 10
-      },
-      (_err, response, metadata) => {
-        // console.log(response, metadata);
-        const { activationValue } = metadata;
-        crontab.load((_err, crontab) => {
-          if (activationValue) {
-            let newID = Math.ceil(Math.random()*10000000);
-            const job = crontab.create(`PATH=${process.env.PATH}:/Users/carlos/Desktop/hacks/rmind/bin rmind ${parameters.string} --force --id ${newID}`, chrono.parseDate(activationValue));
-            if (job == null) {
-              console.log('failed to create job')
-            }
 
-          }
-          crontab.remove({command: new RegExp(id, 'ig')});
-          crontab.save(err => err && console.log(err))
-        });
-      });
+    let { options } = parameters
+    if (options.config) {
+      return launchConfig()
     }
-  },
+
+    let spinner = print.spin('Reading config...')
+    let configuration
+
+    try {
+      configuration = await readConfig(CONFIG_FILE)
+      spinner.stop()
+    } catch (err) {
+      spinner.stop()
+      await initConfig()
+      configuration = await readConfig(CONFIG_FILE)
+    }
+
+    try {
+      let listID = configuration.defaultList
+      const lists = configuration.lists
+      let listName = configuration.lists[listID].name
+
+      if (options.l) {
+        for (const list in lists) {
+          if (lists[list].alias === options.l) {
+            listName = lists[list].name
+            listID = list
+          }
+        }
+      }
+
+      spinner = print.spin(`Creating reminder in list "${listName}"...`)
+      const [parsedDate] = chrono.parse(parameters.string)
+
+      let reminderText = parameters.string
+      let date: Date
+      if (parsedDate) {
+        reminderText = parameters.string.slice(0, parsedDate.index).trim()
+        date = chrono.parseDate(parsedDate.text)
+      }
+      await remind(listID, capitalize(reminderText), date)
+      spinner.stop()
+      if (parsedDate) {
+        const relativeDateFormat = formatRelative(date, new Date())
+        const normalDateFormat = format(date, `EEEE MMM do 'at' hh':'mm aaa`)
+
+        // Relative format is fine until it starts showing future dates as 01/01/2020.
+        // We'll use the normal format when that happens.
+        const useNormalFormat = /^\d{2}\/\d{2}\/\d{4}$/.test(relativeDateFormat)
+        print.info(
+          `${print.checkmark} I'll remind you to "${reminderText}" (${
+            useNormalFormat ? normalDateFormat : capitalize(relativeDateFormat)
+          })`
+        )
+      } else {
+        print.info(`${print.checkmark} Reminder "${reminderText}" added to list "${listName}"`)
+      }
+    } catch (err) {
+      spinner.stop()
+      print.error(err)
+    }
+  }
 }
 
 module.exports = command

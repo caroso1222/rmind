@@ -1,5 +1,5 @@
 const { exec } = require("child_process");
-
+const { format, formatDistance, formatRelative, subDays } = require('date-fns');
 
 function list() {
   let applescript = [
@@ -24,6 +24,19 @@ function list() {
   'end repeat',
   'end tell'];
 
+  applescript = ['tell app "Reminders"',
+  'set mylist to list "Reminders"',
+  'set duedatestr to "7/10/2014 3:00 PM"',
+  'tell mylist',
+  'set newremin to make new reminder',
+  'set name of newremin to "review and do"',
+  'set body of newremin to "foo bar baz"',
+  'set remind me date of newremin to (date "7/10/2014 3:00 PM")',
+  'tell newremin to addRecurrenceRule:()',
+  'end tell',
+  'end tell'];
+
+
   var scriptString = '';
   for (var i in applescript) {
     scriptString += "-e '" + applescript[i] + "' ";
@@ -39,4 +52,7 @@ function list() {
   })
 }
 
-list()
+// list()
+
+const d = format(new Date(), "dd/mm/yyyy hh:mm b");
+console.log(d);

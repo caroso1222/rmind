@@ -32,15 +32,10 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "@types/node-notifier": "^6.0.1",
-    "applescript": "^1.0.0",
     "chrono-node": "^1.4.4",
-    "crontab": "^1.3.0",
     "date-fns": "^2.12.0",
     "gluegun": "^4.2.0",
-    "node-cron": "^2.0.3",
     "node-dotconfig": "^1.0.2",
-    "node-notifier": "^6.0.0",
     "node-reminders": "^1.0.0"
   },
   "devDependencies": {

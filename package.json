@@ -4,6 +4,7 @@
   "description": "rmind CLI",
   "private": false,
   "types": "build/types/types.d.ts",
+  "repository": "https://github.com/caroso1222/rmind",
   "bin": {
     "rmind": "bin/rmind"
   },

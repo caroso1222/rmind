@@ -1,25 +1,70 @@
-# rmind CLI
+# rmind
 
-A CLI for rmind.
+A minimalist CLI for the macOS Reminders app.
 
-## Customizing your CLI
+```
+$ rmind review PR tomorrow morning
+```
 
-Check out the documentation at https://github.com/infinitered/gluegun/tree/master/docs.
+- 🔥 Add reminders with natural language from the terminal
+- ⭐️ Support for macOS Sierra, Mojave and Catalina
+- 🎉 Optionally configure the default list for reminders
+- 🌈 Register alias for Reminder Lists
 
-## Publishing to NPM
+## Installation
 
-To package your CLI up for NPM, do this:
+```
+$ npm i -g rmind
+```
 
-```shell
-$ npm login
-$ npm whoami
-$ npm lint
-$ npm test
-(if typescript, run `npm run build` here)
-$ npm publish
+## Usage
+
+### Basic
+
+Type `rmind` to add a reminder. Set remind dates using natural language.
+
+```
+$ rmind publish blog post this friday at 4pm
+$ rmind clean up crontab in 1 month
+$ rmind ask Leena for PR review in 40 mins
+$ rmind call mom tonight
+```
+
+It will automatically open the Reminders App and add your reminder to the default list.
+
+### Initial config
+
+When you run `rmind` for the first time, you'll be asked to configure the list where the reminders will be put by default. You can change this anytime with `rmind --config`.
+
+### Configuration
+
+Enter configuration mode by typing:
+
+```
+$ rmind --config
+```
+
+In this mode, you'll be able to do any of the following actions:
+
+- Configure default list for reminders
+- Register a new list alias
+
+#### List Alias
+
+You can add reminders to different lists by configuring aliases.
+
+1. Enter config mode `rmind --config`
+2. Select option **Add a new list alias**
+3. Select the list you want to configure
+4. Type an alias. It's recommended to keep this to 1 or 2 characters.
+
+For example, if you set an alias of `g` for your list Groceries, you'll be able to add items this way:
+
+```
+$ rmind -l g cereal milk
 ```
 
 # License
 
-MIT - see LICENSE
+MIT © [Carlos Roso](https://carlosroso.com/)
 

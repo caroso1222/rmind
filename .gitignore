@@ -7,3 +7,4 @@ dist
 build
 .vscode
 yarn-error.log
+publish.md

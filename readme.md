@@ -1,6 +1,14 @@
-# rmind
 
-A minimalist CLI for the macOS Reminders app.
+<div align="center">
+  <img src="media/rmind.svg" width="220px">
+	<p>
+		<b>A minimalist CLI for the macOS Reminders app</b>
+	</p>
+</div>
+
+<br>
+
+
 
 ```
 $ rmind review PR tomorrow morning

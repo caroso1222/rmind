@@ -9,7 +9,6 @@
 <br>
 
 
-
 ```
 $ rmind review PR tomorrow morning
 ```
@@ -71,6 +70,13 @@ For example, if you set an alias of `g` for your list Groceries, you'll be able 
 ```
 $ rmind -l g cereal milk
 ```
+
+# Contributing
+
+1. Fork the project
+2. `rmind.ts` is the entry point to the CLI
+3. Run `yarn link` so that `rmind` gets registered globally
+3. To test your changes first run `npm run build` and then use `rmind` in the terminal
 
 # License
 

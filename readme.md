@@ -8,6 +8,7 @@
 
 <br>
 
+![demo gif](media/rmind.gif)
 
 ```
 $ rmind review PR tomorrow morning
